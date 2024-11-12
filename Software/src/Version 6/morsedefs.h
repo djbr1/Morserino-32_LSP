@@ -244,3 +244,5 @@ extern void DEBUG (String s);
 #define _max(a,b) ((a)>(b)?(a):(b))
 
 #endif
+
+#define FEATURE_PRESSURE_PADDLES

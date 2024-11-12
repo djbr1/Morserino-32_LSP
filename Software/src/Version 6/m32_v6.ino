@@ -502,8 +502,9 @@ void setup()
   adcAttachPin(audioInPin);
 
   // to calibrate sensors, we record the values in untouched state; need to do this after checking for system config
+  #ifndef FEATURE_PRESSURE_PADDLES
   initSensors();
-
+#endif // !FEATURE_PRESSURE_PADDLES
 
 
   /// set up quickstart - this should only be done once at startup - after successful quickstart we disable it to allow normal menu operation
@@ -1169,10 +1170,17 @@ boolean checkPaddles() {
   */
   left = MorsePreferences::pliste[posExtPddlPolarity].value ? rightPin : leftPin;
   right = MorsePreferences::pliste[posExtPddlPolarity].value ? leftPin : rightPin;
+  
+  /// where are the touch paddles?
+// const int LEFT = T2;        // = Pin 2
+ // const int RIGHT = T5;       // = Pin 12
+ //
+  #ifndef FEATURE_PRESSURE_PADDLES
   sensor = readSensors(LEFT, RIGHT, false);
+  #endif // FEATURE_PRESSURE_PADDLES
   newL = (sensor >> 1);
   newR = (sensor & 0x01);
-                                                          // read external paddle presses
+                                                            // read external paddle presses
   newL = newL | (!digitalRead(left)) ;                    // tip (=left) always, to be able to use straight key to initiate echo trainer etc
   if (MorsePreferences::pliste[posCurtisMode].value != STRAIGHTKEY) {               
       newR = newR | (!digitalRead(right)) ;               // ring (=right) only when in straight key mode, to prevent continuous activation 
@@ -1245,6 +1253,9 @@ void togglePolarity () {
 /// 0 = nothing touched,  1= right touched, 2 = left touched, 3 = both touched
 /// binary:   00          01                10                11
 
+
+
+#ifndef FEATURE_PRESSURE_PADDLES
 uint8_t readSensors(int left, int right, boolean init) {
   //long int timer = micros();
   //static boolean first = true;
@@ -1276,7 +1287,6 @@ uint8_t readSensors(int left, int right, boolean init) {
   }
 }
 
-
 void initSensors() {
   int v;
   lUntouched = rUntouched = 60;       /// new: we seek minimum
@@ -1295,7 +1305,7 @@ void initSensors() {
   MorsePreferences::tLeft = lUntouched - 9;
   MorsePreferences::tRight = rUntouched - 9;
 }
-
+#endif  // FEATURE_PRESSURE_PADDLES
 
 String getRandomWord( int maxLength) {        //// give me a random English word, max maxLength chars long (1-5) - 0 returns any length
     if (maxLength > 5)
