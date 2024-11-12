@@ -570,7 +570,9 @@ boolean key_was_pressed_at_start() {
 boolean checkKey () {
       uint8_t sensor;
       uint8_t ext;
+      #ifndef FEATURE_PRESSURE_PADDLES
       sensor = readSensors(LEFT, RIGHT, true);
+       #endif   // !FEATURE_PRESSURE_PADDLES
       if (MorsePreferences::pliste[posCurtisMode].value == STRAIGHTKEY)
         ext = (uint8_t) !digitalRead(leftPin);
       else
