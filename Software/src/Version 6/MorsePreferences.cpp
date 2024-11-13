@@ -369,6 +369,11 @@ uint8_t MorsePreferences::loraPower = 14;                   // default 14 dBm = 
   //uint8_t MorsePreferences::promptPause = 2;                  // in echoTrainer mode, length of pause before we send next word; multiplied by interWordSpace
   uint8_t MorsePreferences::tLeft = 20;                       // threshold for left paddle
   uint8_t MorsePreferences::tRight = 20;                      // threshold for right paddle
+  int32_t MorsePreferences::pressure_threshold_dot = 20;                       // pressure threshold for left 
+  int32_t MorsePreferences::pressure_threshold_dash = 20;                      // pressure threshold for right 
+
+ 
+
 
   uint8_t MorsePreferences::vAdjust = 180;                    // correction value: 155 - 250
 

@@ -40,11 +40,20 @@
 #include "MorseWiFi.h"        // WiFi functions
 #include "goertzel.h"         // Goertzel filter
 #include "MorseDecoder.h"     // Decoder Engine
+#include "iarduino_ADC_CS1237.h"   // Load Sensor
+
+iarduino_ADC_CS1237 adc1(13, 2); //  DOT      // Declare an object to work with the functions of the library iarduino_ADC_CS1237, specifying the pins ( SCLK , DATA ). You can specify any Arduino pins.
+iarduino_ADC_CS1237 adc2(13, 12);  // DASH   //  20241112 common CLK pin 13  // All functions of the library (except begin) are optional if the default values are suitable for you.
+
+int32_t read01;  // initial  first sensor
+int32_t read02;  // initial   second sensor
+int32_t calc_pressure_threshold_dot;  // 
+int32_t calc_pressure_threshold_dash;  // 
 
 
 // define the buttons for the clickbutton library, & other classes that we need
 
-/// variables, value defined at setup()
+/// variables, value defined at setup()^
 uint8_t batteryPin;
 int leftPin, rightPin; /// where are the external paddles?
 
@@ -506,6 +515,67 @@ void setup()
   initSensors();
 #endif // !FEATURE_PRESSURE_PADDLES
 
+// initialize ADC sensors
+ #if defined (FEATURE_PRESSURE_PADDLES)   //FEATURE_PRESSURE_PADDLES
+    bool i; 
+  // pinMode(LED_BUILTIN, OUTPUT);
+  adc1.setPulseWidth(30);
+  // adc1.begin();  
+  i=adc1.begin();              if( !i ){ Serial.println(F("\n\r adc1 not present ")); } 
+  adc1.setPinVrefOut(true);
+  adc1.setVrefIn(5.0);
+  adc1.setSpeed(640);
+  adc1.setPGA(2);
+  adc1.setChannel(0);
+
+  adc2.setPulseWidth(30);
+  //adc2.begin();
+  i=adc2.begin();              if( !i ){ Serial.println(F("\n\r adc2 not present ")); } 
+  adc2.setPinVrefOut(true);
+  adc2.setVrefIn(5.0);
+  adc2.setSpeed(640);
+  adc2.setPGA(2);
+  adc2.setChannel(0);
+
+
+read01 = adc1.analogRead();
+read02 = adc2.analogRead();
+DEBUG("adc1 init: " + String(read01) + " adc2 init: " + String(read02));
+// primary_serial_port->print(F("\n\r adc1 idle: "));
+// primary_serial_port->print(read01);
+// primary_serial_port->print(F("\n\r adc2 idle: "));
+// primary_serial_port->println(read02);
+
+calc_pressure_threshold_dot =  read01 + (abs(read01) * MorsePreferences::pressure_threshold_dot)/100    ; 
+// primary_serial_port->println(calc_pressure_threshold_dot);
+
+calc_pressure_threshold_dash =  read02 + (abs(read02) * MorsePreferences::pressure_threshold_dash)/100    ; 
+// primary_serial_port->println(calc_pressure_threshold_dash);
+DEBUG("calc_pressure_threshold_dot init: " + String(calc_pressure_threshold_dot) + " calc_pressure_threshold_dash init: " + String(calc_pressure_threshold_dash));
+
+// playing "ADC_TEXT"
+      // byte oldKey = key_tx;
+      // byte oldSideTone = configuration.sidetone_mode;
+      // key_tx = 0;
+      // configuration.sidetone_mode = SIDETONE_ON;
+  
+      // char hi_text[16];
+      // strcpy(hi_text,ADC_TEXT);
+      // for (int x = 0;hi_text[x] != 0;x++){
+      //   send_char(hi_text[x],KEYER_NORMAL);
+      // }
+
+      // configuration.sidetone_mode = oldSideTone;
+      // key_tx = oldKey;
+
+// digitalWrite(LED_BUILTIN, HIGH); delay(300);digitalWrite(LED_BUILTIN, LOW); delay(300);
+// digitalWrite(LED_BUILTIN, HIGH); delay(300);digitalWrite(LED_BUILTIN, LOW); delay(300);
+// digitalWrite(LED_BUILTIN, HIGH); delay(300);digitalWrite(LED_BUILTIN, LOW); 
+
+#endif   //FEATURE_PRESSURE_PADDLES
+
+
+
 
   /// set up quickstart - this should only be done once at startup - after successful quickstart we disable it to allow normal menu operation
   quickStart = MorsePreferences::pliste[posQuickStart].value;
@@ -577,7 +647,7 @@ boolean checkKey () {
         ext = (uint8_t) !digitalRead(leftPin);
       else
         ext = (uint8_t) !(digitalRead(leftPin) && digitalRead(rightPin));
-      //DEBUG("Paddle: " + String(sensor) + " Ext.Key: " + String(ext));
+      DEBUG("Paddle: " + String(sensor) + " Ext.Key: " + String(ext));
       if (sensor || ext) 
         return true;
       else
@@ -1173,13 +1243,13 @@ boolean checkPaddles() {
   left = MorsePreferences::pliste[posExtPddlPolarity].value ? rightPin : leftPin;
   right = MorsePreferences::pliste[posExtPddlPolarity].value ? leftPin : rightPin;
   
-  /// where are the touch paddles?
+// where are the touch paddles?
 // const int LEFT = T2;        // = Pin 2
- // const int RIGHT = T5;       // = Pin 12
+// const int RIGHT = T5;       // = Pin 12
  //
-  #ifndef FEATURE_PRESSURE_PADDLES
-  sensor = readSensors(LEFT, RIGHT, false);
-  #endif // FEATURE_PRESSURE_PADDLES
+  
+  sensor = readSensors(LEFT, RIGHT, false);  // 
+  
   newL = (sensor >> 1);
   newR = (sensor & 0x01);
                                                             // read external paddle presses
@@ -1250,13 +1320,11 @@ void togglePolarity () {
   
 
 /// function to read sensors:
+/// arguments: touch pin numbers and boolean true/false (true only during checkkey function)
 /// read both left and right twice, repeat reading if it returns 0
 /// return a binary value, depending on a (adaptable?) threshold:
 /// 0 = nothing touched,  1= right touched, 2 = left touched, 3 = both touched
 /// binary:   00          01                10                11
-
-
-
 #ifndef FEATURE_PRESSURE_PADDLES
 uint8_t readSensors(int left, int right, boolean init) {
   //long int timer = micros();
@@ -1279,9 +1347,9 @@ uint8_t readSensors(int left, int right, boolean init) {
     }
     return ( lValue < MorsePreferences::tLeft ? 2 : 0 ) + (rValue < MorsePreferences::tRight ? 1 : 0 );
   } else {
-    //DEBUG("@1216: tLeft: " + String(MorsePreferences::tLeft));
+    DEBUG("@1216: tLeft: " + String(MorsePreferences::tLeft));
     //lValue -=25; rValue -=25;
-    //DEBUG("@1216: lValue, rValue: " + String (lValue) + " " + String(rValue));
+    DEBUG("@1216: lValue, rValue: " + String (lValue) + " " + String(rValue));
     if (lValue < 32 || rValue < 32)
       return 3;
     else
@@ -1307,6 +1375,44 @@ void initSensors() {
   MorsePreferences::tLeft = lUntouched - 9;
   MorsePreferences::tRight = rUntouched - 9;
 }
+#endif  // FEATURE_PRESSURE_PADDLES
+
+#ifdef FEATURE_PRESSURE_PADDLES  // when Load Sensors are used
+//  readSensors   //  binary values returned
+// 0 = nothing touched,  1= right touched, 2 = left touched, 3 = both touched
+/// binary:   00          01                10                11
+// When the capacitance value on T6 falls below a set threshold
+//  uint8_t MorsePreferences::tLeft = 20;                       // threshold for left paddle
+// uint8_t MorsePreferences::tRight = 20;                      // threshold for right paddle
+// SENS_FACTOR is used for auto-calibrating sensitivity of touch paddles (somewhere between 2.0 and 2.5)
+// #define SENS_FACTOR 2.22
+ //
+  uint8_t readSensors(int left, int right, boolean init) {   // variables left and right designate Pin numbers - not relevant for load sensor
+  uint8_t v, lValue, rValue;
+  int32_t LPressure;
+  int32_t RPressure;
+  LPressure = adc1.analogRead();
+  RPressure = adc2.analogRead();
+   // DEBUG("adc1: " + String(LPressure) + " adc2: " + String(RPressure));
+  
+    // if ((LPressure > MorsePreferences::pressure_threshold_dot) && (RPressure > MorsePreferences::pressure_threshold_dash))  // both touched  
+    if ((LPressure > calc_pressure_threshold_dot) && (RPressure > calc_pressure_threshold_dash))  // both touched  
+    {
+       return 3;
+    }
+    //else if ((LPressure < MorsePreferences::pressure_threshold_dot) && (RPressure > MorsePreferences::pressure_threshold_dash))  // 
+    else if ((LPressure < calc_pressure_threshold_dot) && (RPressure > MorsePreferences::pressure_threshold_dash))  // 
+    {
+       return 2;
+    }
+    //else if ((LPressure > MorsePreferences::pressure_threshold_dot) && (RPressure < MorsePreferences::pressure_threshold_dash ))  // 
+    else if ((LPressure > calc_pressure_threshold_dot) && (RPressure < calc_pressure_threshold_dash ))  // 
+    {
+       return 1;
+    }
+    else
+      return 0;  // nothing touched
+  }
 #endif  // FEATURE_PRESSURE_PADDLES
 
 String getRandomWord( int maxLength) {        //// give me a random English word, max maxLength chars long (1-5) - 0 returns any length

@@ -94,6 +94,8 @@ namespace MorsePreferences
   extern uint8_t promptPause;
   extern uint8_t tLeft;
   extern uint8_t tRight;
+  extern int32_t pressure_threshold_dot;
+  extern int32_t pressure_threshold_dash;
   extern uint8_t vAdjust;
   extern uint8_t loraBand;
  #define QRG433 434.15E6
