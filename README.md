@@ -18,6 +18,11 @@ TODO:
 load sensor configurations: (preferably through webserial https://tegmento.org/#m32-config-device )
 - load sensor paddles sensitivity 
 - single lever option:  load sensor provides "negative" weight if pressure applied in counter direction thus allowing single ADC and single load sensor configuration for those who prefer non-iambic.
+
+
+![Morserino Image](https://raw.githubusercontent.com/djbr1/Morserino-32/master//Documentation/Hardware/IMG_1763.JPG?raw=true)
+
+
 ------------------------------------------
 <br><br><br>
 
