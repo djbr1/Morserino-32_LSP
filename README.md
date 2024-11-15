@@ -5,11 +5,11 @@ This is a **fork** of Morserino-32 multi-functional Morse code machine, based on
 ### Built-in capacitive touch sensors are replaced with load sensor (weight sensor) using CS1237 ADC. ###
 Load Sensor paddles have better reliability compared to capacitive touch paddle, they behave like noiseless mechanical paddle, no need to always touch a particular spot on the sensor. Finger does not need to be removed, it is sufficient to decrease pressure as load sensor has inherent spring action.
 
-Hardware modifications:
+**Hardware additions**:
 - ESP32 free pin 13 configured as CLK for ADC sensors, one wire soldered
 - Pins 2 and 12 formerly used for capacitive touch paddle configured as DATA for two ADC 
 - GND and 3.3VEXT taken from JMP1 free holes.
-- 2 x CS1237 ADC on breadboard plus two load sensors
+- Breadboard with 2 x CS1237 ADC plus two load sensors
 
 As there were no free pins on ESP32,  load sensor had to be enabled at compilation using preprocessor directive `#define FEATURE_PRESSURE_PADDLES` in `morsedefs.h` replacing original capacitive touch functionality.
 
@@ -22,8 +22,9 @@ Controls for sensitivity are supported in Morserino code and in HTML pages<br>
 `PUT control/pressure_threshold_dot`<br>
 `PUT control/pressure_threshold_dash`<br>
 
-[My fork of fChristof Dallermassl OE6CHD Morserino CW trainer](https://github.com/djbr1/morserino32-trainer) provides [HTML](https://github.com/djbr1/morserino32-trainer/blob/main/sensor.html) for this purpose
+[My fork of Christof Dallermassl OE6CHD Morserino CW trainer](https://github.com/djbr1/morserino32-trainer) provides [HTML](https://github.com/djbr1/morserino32-trainer/blob/main/sensor.html) for this purpose
 
+![web serial console screenshot](https://github.com/djbr1/Morserino-32/blob/master/Documentation/Hardware/sensor.html.jpg?raw=true)
 
 <br>
 <!--TODO: 
