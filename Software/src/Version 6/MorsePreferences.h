@@ -2,57 +2,54 @@
 #define PREFS_H
 
 #include <Arduino.h>
-#include <Preferences.h>   // ESP 32 library for storing things in non-volatile storage
+#include <Preferences.h> // ESP 32 library for storing things in non-volatile storage
 
-
-#include "ClickButton.h"   // button control library
+#include "ClickButton.h" // button control library
 #include "morsedefs.h"
 #include "MorseMenu.h"
 #include "abbrev.h"
 #include "english_words.h"
 #include "goertzel.h"
 
-
 extern boolean m32protocol;
 extern int8_t hwConf;
 extern loops m32state;
 extern boolean goToMenu;
 
-extern String cleanUpProSigns( String &input );
-//extern int16_t batteryVoltage();
-//extern int16_t volt;
+extern String cleanUpProSigns(String &input);
+// extern int16_t batteryVoltage();
+// extern int16_t volt;
 extern void updateTimings();
-extern String cleanUpProSigns( String &input );
+extern String cleanUpProSigns(String &input);
 
 extern int IRAM_ATTR checkEncoder();
 
-extern void keyOut(boolean,  boolean, int, int);
+extern void keyOut(boolean, boolean, int, int);
 extern void checkShutDown(boolean);
 extern void cleanStartSettings();
 extern void serialEvent();
-extern void jsonCreate(String, String,String);
-extern void jsonConfigShort(String,int, String);
+extern void jsonCreate(String, String, String);
+extern void jsonConfigShort(String, int, String);
 
 extern void jsonError(String);
 extern void jsonActivate(actMessage);
-extern void jsonMenu(String,unsigned int,bool,bool);
+extern void jsonMenu(String, unsigned int, bool, bool);
 extern String getCustomChars();
-
 
 namespace MorsePreferences
 {
-  //String extraItems[8];
-  // the preferences variable and their defaults
-  
+  // String extraItems[8];
+  //  the preferences variable and their defaults
+
   extern boolean useCustomChars;
-  extern String  customCharSet;
+  extern String customCharSet;
 
   extern uint8_t version_major;
   extern uint8_t version_minor;
   extern uint8_t sidetoneVolume;
   extern const uint8_t volumeMin;
   extern const uint8_t volumeMax;
- 
+
   extern uint8_t wpm;
   extern const uint8_t wpmMin;
   extern const uint8_t wpmMax;
@@ -62,45 +59,52 @@ namespace MorsePreferences
   extern uint8_t kochMinimum;
   extern uint8_t kochMaximum;
 
-/// variables for managing snapshots
-  extern uint8_t memories[8];           // contains snapshot numbers 0..7 for each stored snapshot
-  extern uint8_t memCounter;            // contains number of stored snapshots
+  /// variables for managing snapshots
+  extern uint8_t memories[8]; // contains snapshot numbers 0..7 for each stored snapshot
+  extern uint8_t memCounter;  // contains number of stored snapshots
   extern uint8_t memPtr;
-  
+
   ///// stored in preferences, but not adjustable through preferences menu:
   extern uint8_t responsePause;
   extern uint8_t menuPtr;
   extern uint8_t newMenuPtr;
-  
-  //current network config
-  extern String  wlanSSID;
-  extern String  wlanPassword;
-  extern String  wlanTRXPeer; 
+
+  // current network config
+  extern String wlanSSID;
+  extern String wlanPassword;
+  extern String wlanTRXPeer;
 
   // config for up to three networks
-  extern String  wlanSSID1;
-  extern String  wlanPassword1;
-  extern String  wlanTRXPeer1; 
-  
-  extern String  wlanSSID2;
-  extern String  wlanPassword2;
-  extern String  wlanTRXPeer2; 
-  
-  extern String  wlanSSID3;
-  extern String  wlanPassword3;
-  extern String  wlanTRXPeer3; 
+  extern String wlanSSID1;
+  extern String wlanPassword1;
+  extern String wlanTRXPeer1;
+
+  extern String wlanSSID2;
+  extern String wlanPassword2;
+  extern String wlanTRXPeer2;
+
+  extern String wlanSSID3;
+  extern String wlanPassword3;
+  extern String wlanTRXPeer3;
 
   extern uint32_t fileWordPointer;
   extern uint8_t promptPause;
   extern uint8_t tLeft;
   extern uint8_t tRight;
+
   extern int32_t pressure_threshold_dot;
+  extern const int32_t pressure_threshold_dotMin;
+  extern const int32_t pressure_threshold_dotMax;
+
   extern int32_t pressure_threshold_dash;
+  extern const int32_t pressure_threshold_dashMin;
+  extern const int32_t pressure_threshold_dashMax;
+
   extern uint8_t vAdjust;
   extern uint8_t loraBand;
- #define QRG433 434.15E6
- #define QRG866 869.15E6
- #define QRG920 920.55E6
+#define QRG433 434.15E6
+#define QRG866 869.15E6
+#define QRG920 920.55E6
   extern uint32_t loraQRG;
   extern uint8_t loraPower;
   extern uint8_t snapShots;
@@ -108,42 +112,42 @@ namespace MorsePreferences
   extern uint8_t oledBrightness;
   extern char cwMem[][48];
   extern uint8_t cwMemMask;
-  
+
   ////// end of variables stored in preferences
-  
+
   //// for adjusting preferences
-  
 
-  #define MAX_MAP_ELEMENTS 15
+#define MAX_MAP_ELEMENTS 15
 
-  struct parameter {
-     uint8_t value;
-     const uint8_t minimum;
-     const uint8_t maximum;
-     const uint8_t stepValue;
-     const char *parName;
-     const char *parDescript;
-     const boolean isMapped;
-     const char *mapping[MAX_MAP_ELEMENTS];
+  struct parameter
+  {
+    uint8_t value;
+    const uint8_t minimum;
+    const uint8_t maximum;
+    const uint8_t stepValue;
+    const char *parName;
+    const char *parDescript;
+    const boolean isMapped;
+    const char *mapping[MAX_MAP_ELEMENTS];
   };
-  
+
   extern parameter pliste[];
 
   extern const String prefOption[];
   extern const String prefDescript[];
-  extern  prefPos keyerOptions[];
-  extern  prefPos generatorOptions[];
-  extern  prefPos playerOptions[];
-  extern  prefPos echoPlayerOptions[];
-  extern  prefPos echoTrainerOptions[];
-  extern  prefPos kochGenOptions[];
-  extern  prefPos kochEchoOptions[];
-  extern  prefPos loraTrxOptions[];
-  extern  prefPos wifiTrxOptions[];
-  extern  prefPos extTrxOptions[];
-  extern  prefPos decoderOptions[];
-  extern  prefPos allOptions[];
-  
+  extern prefPos keyerOptions[];
+  extern prefPos generatorOptions[];
+  extern prefPos playerOptions[];
+  extern prefPos echoPlayerOptions[];
+  extern prefPos echoTrainerOptions[];
+  extern prefPos kochGenOptions[];
+  extern prefPos kochEchoOptions[];
+  extern prefPos loraTrxOptions[];
+  extern prefPos wifiTrxOptions[];
+  extern prefPos extTrxOptions[];
+  extern prefPos decoderOptions[];
+  extern prefPos allOptions[];
+
   extern prefPos *currentOptions;
 
   extern int keyerOptionsSize;
@@ -158,13 +162,11 @@ namespace MorsePreferences
   extern int extTrxOptionsSize;
   extern int decoderOptionsSize;
   extern int allOptionsSize;
-  
- 
-    
+
   void updateMemory(uint8_t);
   void clearMemory(uint8_t);
   String doClearMemory(uint8_t);
-  boolean  recallSnapshot();
+  boolean recallSnapshot();
   boolean storeSnapshot(uint8_t);
   boolean setupPreferences(uint8_t);
   void displayKeyerPreferencesMenu(prefPos);
@@ -182,7 +184,7 @@ namespace MorsePreferences
   void handleKochSequence();
   void handleCarouselChange();
   void setCustomChars(String);
-  //void kochSetup();
+  // void kochSetup();
   void loraSystemSetup();
   void determineBoardVersion();
   void calibrateVoltageMeasurement();
@@ -197,51 +199,51 @@ namespace MorsePreferences
   void getCwMem();
 }
 
+class Koch
+{
+private:
+  uint16_t wordIndices[EnglishWords::WORDS_NUMBER_OF_ELEMENTS];
+  uint16_t numberOfWords;
+  uint16_t abbrIndices[Abbrev::ABBREV_NUMBER_OF_ELEMENTS];
+  uint16_t numberOfAbbr;
+  String kochCharSet;
+  String licwKochChars;
+  const String lcwoKochChars = "kmuresnaptlwi.jz=foy,vg5/q92h38b?47c1d60x-K+ASNEB@:";
+  const String cwacKochChars = "teanois14rhdl25ucmw36?fy,pgq79/bv+kj80=xzBK.-ASNE@:";
+  // uint8_t kochCharsLength;
+  void createWords(uint8_t, uint8_t);
+  void createAbbr(uint8_t, uint8_t);
+  uint8_t wordIsKoch(String);
 
-class Koch {
-  private:
-    uint16_t wordIndices[EnglishWords::WORDS_NUMBER_OF_ELEMENTS];
-    uint16_t numberOfWords;
-    uint16_t abbrIndices[Abbrev::ABBREV_NUMBER_OF_ELEMENTS];
-    uint16_t numberOfAbbr;
-    String kochCharSet;
-    String licwKochChars;
-    const String lcwoKochChars =      "kmuresnaptlwi.jz=foy,vg5/q92h38b?47c1d60x-K+ASNEB@:";
-    const String cwacKochChars =      "teanois14rhdl25ucmw36?fy,pgq79/bv+kj80=xzBK.-ASNE@:";
-    //uint8_t kochCharsLength;
-    void createWords(uint8_t, uint8_t);
-    void createAbbr(uint8_t, uint8_t);
-    uint8_t wordIsKoch(String);
+  uint8_t adaptiveProbabilities[51];
+  String initSequence;
+  uint8_t initSequenceIndex;
 
-    uint8_t adaptiveProbabilities[51];
-    String initSequence;
-    uint8_t initSequenceIndex;
+public:
+  const String morserinoKochChars = "mkrsuaptlowi.njef0yv,g5/q9zh38b?427c1d6x-=K+SNAEB@:";
+  const String licwAllKochChars = "reatinpgslcdhofuwbkmy59,qxv73?+K=16.zj/28B40-ASNE@:";
 
-  public:
-    const String morserinoKochChars = "mkrsuaptlowi.njef0yv,g5/q9zh38b?427c1d6x-=K+SNAEB@:";
-    const String licwAllKochChars =   "reatinpgslcdhofuwbkmy59,qxv73?+K=16.zj/28B40-ASNE@:";
-    
-    Koch();
-    void setup();
-    String getNewChar();
-    String getKochChar(uint8_t);
-    String getRandomChar(int);
-    String getRandomWord();
-    String getRandomAbbrev();
-    String getAdaptiveChar(int);
-    String getCharSet();
-    String getRandomCharSet();
-    String getInitChar(int);
-    void setKochChars(uint8_t);
-    uint8_t setupLICWkochChars(uint8_t);
-    void setCustomChars(String chars);
-    int16_t getProbabilitySum();
-    void increaseWordProbability(String& expected, String& received);
-    int getFailedCharIndex(String& expected, String& received);
-    void increaseCharProbability(char c, uint8_t count);
-    void decreaseWordProbability(String& word);
-    void decreaseCharProbability(char c);
-    uint8_t adjustForCarousel(uint8_t offset);
+  Koch();
+  void setup();
+  String getNewChar();
+  String getKochChar(uint8_t);
+  String getRandomChar(int);
+  String getRandomWord();
+  String getRandomAbbrev();
+  String getAdaptiveChar(int);
+  String getCharSet();
+  String getRandomCharSet();
+  String getInitChar(int);
+  void setKochChars(uint8_t);
+  uint8_t setupLICWkochChars(uint8_t);
+  void setCustomChars(String chars);
+  int16_t getProbabilitySum();
+  void increaseWordProbability(String &expected, String &received);
+  int getFailedCharIndex(String &expected, String &received);
+  void increaseCharProbability(char c, uint8_t count);
+  void decreaseWordProbability(String &word);
+  void decreaseCharProbability(char c);
+  uint8_t adjustForCarousel(uint8_t offset);
 };
 
 extern Koch koch;

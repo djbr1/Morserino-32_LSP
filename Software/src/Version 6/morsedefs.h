@@ -41,7 +41,7 @@ const String PROJECTNAME = "Morserino-32";
 #define BETA false                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 
-#define IGNORE_SERIALOUT false
+#define IGNORE_SERIALOUT true
 
 // if IGNORE_SERIALOUT is true, alle DEBUG messages are on serial out, even when Serial Out is active outputting characters from Keyer, Decoder etc
 

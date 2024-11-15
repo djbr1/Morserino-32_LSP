@@ -3,5 +3,11 @@
         "random": "cpp",
         "atomic": "cpp",
         "cstdint": "cpp"
+    },
+    "workbench.colorCustomizations": {
+                "editorUnnecessaryCode.border": "#ff0000"
+    }
+    {
+        "editor.showUnused": true
     }
 }
