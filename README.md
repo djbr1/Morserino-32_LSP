@@ -4,6 +4,7 @@ This is a **fork** of Morserino-32 multi-functional Morse code machine, based on
 
 ### Built-in capacitive touch sensors are replaced with load sensor (weight sensor) using CS1237 ADC. ###
 Load Sensor paddles have better reliability compared to capacitive touch paddle, they behave like noiseless mechanical paddle, no need to always touch a particular spot on the sensor. Finger does not need to be removed, it is sufficient to decrease pressure as load sensor has inherent spring action.
+**For more details see https://blog.hb9txb.ch**
 
 **Hardware additions**:
 - ESP32 free pin 13 configured as CLK for ADC sensors, one wire soldered
