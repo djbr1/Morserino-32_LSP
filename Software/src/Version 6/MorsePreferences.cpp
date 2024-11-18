@@ -292,13 +292,13 @@ uint32_t MorsePreferences::fileWordPointer = 0; // remember how far we have read
 uint8_t MorsePreferences::tLeft = 20;  // threshold for left paddle
 uint8_t MorsePreferences::tRight = 20; // threshold for right paddle
 
-int32_t MorsePreferences::pressure_threshold_dot = 2; // pressure threshold for left
-extern const int32_t MorsePreferences::pressure_threshold_dotMin = 1;
-extern const int32_t MorsePreferences::pressure_threshold_dotMax = 100;
+uint8_t MorsePreferences::pressure_threshold_dot = 2; // pressure threshold for left
+extern const uint8_t MorsePreferences::pressure_threshold_dotMin = 1;
+extern const uint8_t MorsePreferences::pressure_threshold_dotMax = 100;
 
-int32_t MorsePreferences::pressure_threshold_dash = 2; // pressure threshold for right
-extern const int32_t MorsePreferences::pressure_threshold_dashMin = 1;
-extern const int32_t MorsePreferences::pressure_threshold_dashMax = 100;
+uint8_t MorsePreferences::pressure_threshold_dash = 2; // pressure threshold for right
+extern const uint8_t MorsePreferences::pressure_threshold_dashMin = 1;
+extern const uint8_t MorsePreferences::pressure_threshold_dashMax = 100;
 
 uint8_t MorsePreferences::vAdjust = 180; // correction value: 155 - 250
 
@@ -329,7 +329,7 @@ uint8_t MorsePreferences::memCounter;
 uint8_t MorsePreferences::memPtr = 0;
 
 prefPos MorsePreferences::keyerOptions[] = {posClicks, posPitch, posTimeOut, posQuickStart, posSerialOut, posPolarity, posExtPddlPolarity,
-                                            posCurtisMode, posCurtisBDahTiming, posCurtisBDotTiming, posACS, posLatency};
+                                            posCurtisMode, posCurtisBDahTiming, posCurtisBDotTiming, posACS, posLatency}; // TODO pressure_thresholds, they belong to keyerOptions ....
 prefPos MorsePreferences::generatorOptions[] = {posClicks, posPitch, posTimeOut, posQuickStart, posSerialOut, posPolarity, posExtPddlPolarity, posInterCharSpace, posInterWordSpace,
                                                 posRandomOption, posRandomLength, posCallLength, posAbbrevLength, posWordLength,
                                                 posMaxSequence, posAutoStop, posGeneratorDisplay, posWordDoubler,
@@ -444,7 +444,7 @@ prefPos MorsePreferences::allOptions[] = {posClicks, posPitch, posTimeOut, posQu
                                           posInterCharSpace, posInterWordSpace, posRandomOption, posRandomLength, posCallLength, posAbbrevLength, posWordLength,
                                           posMaxSequence, posAutoStop, posGeneratorDisplay, posRandomFile, posWordDoubler,
                                           posEchoRepeats, posEchoDisplay, posEchoConf, posEchoToneShift, posSpeedAdapt,
-                                          posKeyExternalTx, posLoraCwTransmit, posLoraChannel, posGoertzelBandwidth, posExtAudioOnDecode};
+                                          posKeyExternalTx, posLoraCwTransmit, posLoraChannel, posGoertzelBandwidth, posExtAudioOnDecode};  // TODO pressure_thresholds 
 
 prefPos *MorsePreferences::currentOptions = MorsePreferences::allOptions;
 
@@ -1022,8 +1022,9 @@ void MorsePreferences::readPreferences(String repository)
       pref.putUChar("kochFilter", MorsePreferences::kochFilter);
 
     if ((temp = pref.getUChar("wpm")))
-      MorsePreferences::wpm = temp;
-    else if (morserino)
+          { MorsePreferences::wpm = temp;
+           DEBUG("@ l.1026 wpm: " + String(wpm)); }
+      else if (morserino)
       pref.putUChar("wpm", MorsePreferences::wpm);
 //
     if ((temp = pref.getUChar("pressure_threshold_dot")))
@@ -1039,9 +1040,9 @@ void MorsePreferences::readPreferences(String repository)
 //
     if ((temp = pref.getUChar("sidetoneVolume", 255)) != 255)
       MorsePreferences::sidetoneVolume = temp;
+    
     else if (morserino)
-      pref.putUChar("sidetoneVolume", MorsePreferences::sidetoneVolume);
-
+        pref.putUChar("sidetoneVolume", MorsePreferences::sidetoneVolume);
     if (temp = pref.getUChar("vAdjust"))
       MorsePreferences::vAdjust = temp;
 
@@ -1071,7 +1072,7 @@ void MorsePreferences::readPreferences(String repository)
   if ((temp = pref.getUChar("lastExecuted")))
   {
     MorsePreferences::menuPtr = temp;
-    // DEBUG("@942 read: temp = " + String(temp));
+     DEBUG("@942 read: temp = " + String(temp));
   }
 
   if ((temp = pref.getUChar("kochCharsLength")))
@@ -1089,7 +1090,7 @@ void MorsePreferences::readPreferences(String repository)
 
     if ((temp = pref.getUChar(prefName[i], 255)) != 255)
     { // we have something in the repository
-      // DEBUG("@942 " + String(prefName[i]) + " : " + String(temp));
+       DEBUG("@942 " + String(prefName[i]) + " : " + String(temp));
       if (i == posTimeOut && temp > 3)
         temp = 0;
       if (pliste[i].stepValue != 1)
@@ -1117,11 +1118,11 @@ void MorsePreferences::writePreferences(String repository)
 
   if (repository == "morserino")
     morserino = true;
-  // DEBUG("Writing to repository: " + repository);
+ DEBUG("@1121  Writing to repository: " + repository);
   repository.toCharArray(repName, l);
 
   pref.begin(repName, false); // open namespace in read/write mode
-  // DEBUG("@ l.969 Free entries: " + String(pref.freeEntries()));
+ DEBUG("@ l.969 Free entries: " + String(pref.freeEntries()));
   if (morserino)
   {                                                                // the following things are not stored in snapshots anymore,
                                                                    // only in the ""Morserino" permanent memory
@@ -1188,7 +1189,7 @@ void MorsePreferences::writePreferences(String repository)
 
     pref.remove("lastExecuted");                              // This is ONLY written to snapshots here (a separate function is used to store it in normal permanent memory)
     pref.putUChar("lastExecuted", MorsePreferences::menuPtr); // store last executed command in snapshots
-                                                              // DEBUG("@1051: lastExecuted: " + String(pref.getUChar("lastExecuted")));
+                                                               DEBUG("@1051: lastExecuted: " + String(pref.getUChar("lastExecuted")));
   }
 
   // now we write all other preferences into the respective repository
@@ -1217,7 +1218,7 @@ void MorsePreferences::writePreferences(String repository)
       continue;
     if (MorsePreferences::pliste[i].value != pref.getUChar(prefName[i], 255))
     {                                                                // stored value is different,
-                                                                     // DEBUG("@1062 " + String(prefName[i]) + " old: " + String(pref.getUChar(prefName[i],255)) + " new: " + String(MorsePreferences::pliste[i].value));
+                                                                      DEBUG("@1062 " + String(prefName[i]) + " old: " + String(pref.getUChar(prefName[i],255)) + " new: " + String(MorsePreferences::pliste[i].value));
       pref.putUChar(prefName[i], MorsePreferences::pliste[i].value); // so we need to store new value
       switch (i)
       { // in certain cases we need to do something
@@ -1241,6 +1242,7 @@ void MorsePreferences::writePreferences(String repository)
         break;
       } // end of "special cases"
     } // end of "stored value is different"
+     DEBUG("@1245 " + String(prefName[i]) + " old: " + String(pref.getUChar(prefName[i],255)) + " new: " + String(MorsePreferences::pliste[i].value));
   } // end of "for all these preferences"
   updateTimings();
 
@@ -1466,8 +1468,11 @@ void MorsePreferences::writeWordPointer()
 void MorsePreferences::writeVolume()
 {
   pref.begin("morserino", false); // open the namespace as read/write
+  DEBUG("last volume: " + String(sidetoneVolume)+ " prefvolume: " + String(MorsePreferences::sidetoneVolume));
   if (pref.getUChar("sidetoneVolume") != MorsePreferences::sidetoneVolume)
-    pref.putUChar("sidetoneVolume", MorsePreferences::sidetoneVolume); // store the last volume, if it has changed
+{
+    pref.putUChar("sidetoneVolume", MorsePreferences::sidetoneVolume); // store the last volume, if it has changed 
+          }   
   pref.end();
 }
 

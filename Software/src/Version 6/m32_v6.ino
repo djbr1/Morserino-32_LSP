@@ -2345,7 +2345,7 @@ void change_pressure_threshold_dot(int t)
   MorsePreferences::pressure_threshold_dot = constrain(MorsePreferences::pressure_threshold_dot, 1, 100) - 1;
   DEBUG(String(MorsePreferences::pressure_threshold_dot));
   if (m32state != menu_loop)
-    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::sidetoneVolume); // sidetone volume;
+    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::pressure_threshold_dot); // pressure_threshold_dot ;
   if (m32protocol)
     jsonControl("pressure_threshold_dot", MorsePreferences::pressure_threshold_dot, MorsePreferences::pressure_threshold_dashMin, MorsePreferences::pressure_threshold_dashMax, false);
 }
@@ -2355,7 +2355,7 @@ void change_pressure_threshold_dash(int t)
   MorsePreferences::pressure_threshold_dash = constrain(MorsePreferences::pressure_threshold_dash, 1, 100) - 1;
   DEBUG(String(MorsePreferences::pressure_threshold_dash));
   if (m32state != menu_loop)
-    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::sidetoneVolume); // sidetone volume;
+    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::pressure_threshold_dash); // pressure_threshold_dash;
   if (m32protocol)
     jsonControl("pressure_threshold_dash", MorsePreferences::pressure_threshold_dash, MorsePreferences::pressure_threshold_dashMin, MorsePreferences::pressure_threshold_dashMax, false);
 }
@@ -3864,15 +3864,19 @@ void jsonControls()
   JsonObject speedo = liste.createNestedObject();
   speedo["name"] = "speed";
   speedo["value"] = MorsePreferences::wpm;
+
   JsonObject volumeo = liste.createNestedObject();
   volumeo["name"] = "volume";
   volumeo["value"] = MorsePreferences::sidetoneVolume;
+
   JsonObject pressure_threshold_doto = liste.createNestedObject();
   pressure_threshold_doto["name"] = "pressure_threshold_dot";
   pressure_threshold_doto["value"] = MorsePreferences::pressure_threshold_dot;
+
   JsonObject pressure_threshold_dasho = liste.createNestedObject();
   pressure_threshold_dasho["name"] = "pressure_threshold_dash";
   pressure_threshold_dasho["value"] = MorsePreferences::pressure_threshold_dash;
+  
   DynamicJsonDocument doc(256);
   doc["controls"] = liste;
   serializeJson(doc, Serial);

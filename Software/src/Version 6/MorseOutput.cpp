@@ -615,7 +615,7 @@ void MorseOutput::pwmTone(unsigned int frequency, unsigned int volume, boolean l
   ledcWrite(toneChannel, dutyCycleFiftyPercent);
   ledcWriteTone(toneChannel, frequency);
   }
-
+  // bool ledcFade(uint8_t pin, uint32_t start_duty, uint32_t target_duty, int max_fade_time_ms);
   //ledcWrite(volChannel, volFreq);
   ledcWrite(volChannel, j);       // experimental: soften the inital click
   delay(3);                       // experimental: soften the inital click
@@ -636,6 +636,9 @@ void MorseOutput::pwmNoTone(unsigned int volume) {      // stop playing a tone b
   
   //ledcWrite(toneChannel, 450);
   //ledcWrite(lineOutChannel, 450);
+
+  // bool ledcFade(uint8_t pin, uint32_t start_duty, uint32_t target_duty, int max_fade_time_ms);
+  
   ledcWrite(volChannel, jj);         // experimental: soften the click
   delay(3);
   ledcWrite(volChannel, j);         // experimental: soften the click

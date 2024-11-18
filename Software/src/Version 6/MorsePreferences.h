@@ -92,13 +92,13 @@ namespace MorsePreferences
   extern uint8_t tLeft;
   extern uint8_t tRight;
 
-  extern int32_t pressure_threshold_dot;
-  extern const int32_t pressure_threshold_dotMin;
-  extern const int32_t pressure_threshold_dotMax;
+  extern uint8_t pressure_threshold_dot;
+  extern const uint8_t pressure_threshold_dotMin;
+  extern const uint8_t pressure_threshold_dotMax;
 
-  extern int32_t pressure_threshold_dash;
-  extern const int32_t pressure_threshold_dashMin;
-  extern const int32_t pressure_threshold_dashMax;
+  extern uint8_t pressure_threshold_dash;
+  extern const uint8_t pressure_threshold_dashMin;
+  extern const uint8_t pressure_threshold_dashMax;
 
   extern uint8_t vAdjust;
   extern uint8_t loraBand;
