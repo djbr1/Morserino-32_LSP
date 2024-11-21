@@ -53,7 +53,7 @@ const char *prefName[] = {"encoderClicks", "sidetoneFreq", "useExtPaddle", "dida
                           "GeneratorDispl", "wordDoubler", "echoDisplay", "echoRepeats", "echoConf",
                           "KeyExternalTx", "LoraCwTransmit", "goertzelBW", "speedAdapt",
                           "KochSeq", "carouselStart", "latency", "randomFile", "extAudioOnDecod", "timeOut",
-                          "quickStart", "autoStop", "maxSequence", "LoraChannel", "serialOut"};
+                          "quickStart", "autoStop", "maxSequence", "LoraChannel", "serialOut","PStDot","PStDash"};
 /* parameter:
      uint8_t value; const uint8_t minimum; const uint8_t maximum; const uint8_t stepValue;
      const char *parName;
@@ -292,13 +292,13 @@ uint32_t MorsePreferences::fileWordPointer = 0; // remember how far we have read
 uint8_t MorsePreferences::tLeft = 20;  // threshold for left paddle
 uint8_t MorsePreferences::tRight = 20; // threshold for right paddle
 
-uint8_t MorsePreferences::pressure_threshold_dot = 2; // pressure threshold for left
-extern const uint8_t MorsePreferences::pressure_threshold_dotMin = 1;
-extern const uint8_t MorsePreferences::pressure_threshold_dotMax = 100;
+uint8_t MorsePreferences::PStDot = 4; // pressure threshold for left
+extern const uint8_t MorsePreferences::PStDotMin = 1;
+extern const uint8_t MorsePreferences::PStDotMax = 100;
 
-uint8_t MorsePreferences::pressure_threshold_dash = 2; // pressure threshold for right
-extern const uint8_t MorsePreferences::pressure_threshold_dashMin = 1;
-extern const uint8_t MorsePreferences::pressure_threshold_dashMax = 100;
+uint8_t MorsePreferences::PStDash = 2; // pressure threshold for right
+extern const uint8_t MorsePreferences::PStDashMin = 1;
+extern const uint8_t MorsePreferences::PStDashMax = 100;
 
 uint8_t MorsePreferences::vAdjust = 180; // correction value: 155 - 250
 
@@ -1027,15 +1027,15 @@ void MorsePreferences::readPreferences(String repository)
       else if (morserino)
       pref.putUChar("wpm", MorsePreferences::wpm);
 //
-    if ((temp = pref.getUChar("pressure_threshold_dot")))
-      MorsePreferences::pressure_threshold_dot = temp;
+    if ((temp = pref.getUChar("PStDot")))
+      MorsePreferences::PStDot = temp;
     else if (morserino)
-      pref.putUChar("pressure_threshold_dot", MorsePreferences::pressure_threshold_dot);
+      pref.putUChar("PStDot", MorsePreferences::PStDot);
 
-          if ((temp = pref.getUChar("pressure_threshold_dash")))
-      MorsePreferences::pressure_threshold_dash = temp;
+          if ((temp = pref.getUChar("PStDash")))
+      MorsePreferences::PStDash = temp;
     else if (morserino)
-      pref.putUChar("pressure_threshold_dash", MorsePreferences::pressure_threshold_dash);
+      pref.putUChar("PStDash", MorsePreferences::PStDash);
 
 //
     if ((temp = pref.getUChar("sidetoneVolume", 255)) != 255)
@@ -1447,10 +1447,15 @@ void MorsePreferences::fireCharSeen(boolean wpmOnly)
 {
   pref.begin("morserino", false); // open the namespace as read/write
   pref.putUChar("wpm", MorsePreferences::wpm);
+  // pref.putUChar("PStDot", MorsePreferences::PStDot);
+  // pref.putUChar("PStDash", MorsePreferences::PStDash);
+  DEBUG("@1452 save wpm after 12 char ");
   if (!wpmOnly)
   {
     pref.putUChar("tLeft", MorsePreferences::tLeft);
     pref.putUChar("tRight", MorsePreferences::tRight);
+  // pref.putUChar("PStDot", MorsePreferences::PStDot);
+  // pref.putUChar("PStDash", MorsePreferences::PStDash);
   }
   pref.end();
 }
@@ -1468,10 +1473,14 @@ void MorsePreferences::writeWordPointer()
 void MorsePreferences::writeVolume()
 {
   pref.begin("morserino", false); // open the namespace as read/write
+       pref.putUChar("^", MorsePreferences::PStDash);
+      pref.putUChar("PStDot", MorsePreferences::PStDot);
   DEBUG("last volume: " + String(sidetoneVolume)+ " prefvolume: " + String(MorsePreferences::sidetoneVolume));
   if (pref.getUChar("sidetoneVolume") != MorsePreferences::sidetoneVolume)
 {
     pref.putUChar("sidetoneVolume", MorsePreferences::sidetoneVolume); // store the last volume, if it has changed 
+     pref.putUChar("PStDash", MorsePreferences::PStDash);
+      pref.putUChar("PStDot", MorsePreferences::PStDot);
           }   
   pref.end();
 }

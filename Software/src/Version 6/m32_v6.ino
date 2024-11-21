@@ -1462,15 +1462,15 @@ uint8_t readSensors(int left, int right, boolean init)
   RPressure = adc2.analogRead();
   // DEBUG("adc1: " + String(LPressure) + " adc2: " + String(RPressure));
 
-  if ((LPressure > read01 + (abs(read01) * MorsePreferences::pressure_threshold_dot) / 100) && (RPressure > read02 + (abs(read02) * MorsePreferences::pressure_threshold_dash) / 100)) // both touched
+  if ((LPressure > read01 + (abs(read01) * MorsePreferences::PStDot) / 100) && (RPressure > read02 + (abs(read02) * MorsePreferences::PStDash) / 100)) // both touched
   {
     return 3;
   }
-  else if ((LPressure > read01 + (abs(read01) * MorsePreferences::pressure_threshold_dot) / 100) && (RPressure < read02 + (abs(read02) * MorsePreferences::pressure_threshold_dash) / 100)) //
+  else if ((LPressure > read01 + (abs(read01) * MorsePreferences::PStDot) / 100) && (RPressure < read02 + (abs(read02) * MorsePreferences::PStDash) / 100)) //
   {
     return 2;
   }
-  else if ((LPressure < read01 + (abs(read01) * MorsePreferences::pressure_threshold_dot) / 100) && (RPressure > read02 + (abs(read02) * MorsePreferences::pressure_threshold_dash) / 100)) //
+  else if ((LPressure < read01 + (abs(read01) * MorsePreferences::PStDot) / 100) && (RPressure > read02 + (abs(read02) * MorsePreferences::PStDash) / 100)) //
   {
     return 1;
   }
@@ -2338,28 +2338,30 @@ void changeVolume(int t)
   if (m32protocol)
     jsonControl("volume", MorsePreferences::sidetoneVolume, MorsePreferences::volumeMin, MorsePreferences::volumeMax, false);
 }
-#ifdef FEATURE_PRESSURE_PADDLES
-void change_pressure_threshold_dot(int t)
+
+// // #ifdef FEATURE_PRESSURE_PADDLES
+void change_PStDot(int t)
 {
-  MorsePreferences::pressure_threshold_dot += t + 1;
-  MorsePreferences::pressure_threshold_dot = constrain(MorsePreferences::pressure_threshold_dot, 1, 100) - 1;
-  DEBUG(String(MorsePreferences::pressure_threshold_dot));
+  MorsePreferences::PStDot += t + 1;
+  MorsePreferences::PStDot = constrain(MorsePreferences::PStDot, 1, 100) - 1;
+  DEBUG("@2346: press thrsh dot : " + String(MorsePreferences::PStDot));
   if (m32state != menu_loop)
-    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::pressure_threshold_dot); // pressure_threshold_dot ;
+    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::PStDot); // PStDot ;
   if (m32protocol)
-    jsonControl("pressure_threshold_dot", MorsePreferences::pressure_threshold_dot, MorsePreferences::pressure_threshold_dashMin, MorsePreferences::pressure_threshold_dashMax, false);
+    jsonControl("PStDot", MorsePreferences::PStDot, MorsePreferences::PStDashMin, MorsePreferences::PStDashMax, false);
 }
-void change_pressure_threshold_dash(int t)
+
+void change_PStDash(int t)
 {
-  MorsePreferences::pressure_threshold_dash += t + 1;
-  MorsePreferences::pressure_threshold_dash = constrain(MorsePreferences::pressure_threshold_dash, 1, 100) - 1;
-  DEBUG(String(MorsePreferences::pressure_threshold_dash));
+  MorsePreferences::PStDash += t + 1;
+  MorsePreferences::PStDash = constrain(MorsePreferences::PStDash, 1, 100) - 1;
+  DEBUG("@2356: " + String(MorsePreferences::PStDash));
   if (m32state != menu_loop)
-    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::pressure_threshold_dash); // pressure_threshold_dash;
+    MorseOutput::displayVolume((encoderState == volumeSettingMode ? false : true), MorsePreferences::PStDash); // PStDash;
   if (m32protocol)
-    jsonControl("pressure_threshold_dash", MorsePreferences::pressure_threshold_dash, MorsePreferences::pressure_threshold_dashMin, MorsePreferences::pressure_threshold_dashMax, false);
+    jsonControl("PStDash", MorsePreferences::PStDash, MorsePreferences::PStDashMin, MorsePreferences::PStDashMax, false);
 }
-#endif // FEATURE_PRESSURE_PADDLES
+// // #endif // FEATURE_PRESSURE_PADDLES
 
 void keyTransmitter(boolean noTx)
 {
@@ -3273,10 +3275,10 @@ void m32Get(String type, String token, String value)
       jsonControl("speed", MorsePreferences::wpm, MorsePreferences::wpmMin, MorsePreferences::wpmMax, true);
     else if (token == "volume")
       jsonControl("volume", MorsePreferences::sidetoneVolume, MorsePreferences::volumeMin, MorsePreferences::volumeMax, true);
-    else if (token == "pressure_threshold_dot")
-      jsonControl("pressure_threshold_dot", MorsePreferences::pressure_threshold_dot, MorsePreferences::pressure_threshold_dotMin, MorsePreferences::pressure_threshold_dotMax, true);
-    else if (token == "pressure_threshold_dash")
-      jsonControl("pressure_threshold_dash", MorsePreferences::pressure_threshold_dash, MorsePreferences::pressure_threshold_dashMin, MorsePreferences::pressure_threshold_dashMax,true);
+    else if (token == "pstdot")
+      jsonControl("PStDot", MorsePreferences::PStDot, MorsePreferences::PStDotMin, MorsePreferences::PStDotMax, true);
+    else if (token == "pstdash")
+      jsonControl("PStDash", MorsePreferences::PStDash, MorsePreferences::PStDashMin, MorsePreferences::PStDashMax,true);
     else /// invalid argument {
       jsonError("INVALID ARGUMENT");
   }
@@ -3354,15 +3356,15 @@ void m32Put(String type, String token, String value)
       int i = value.toInt() - MorsePreferences::sidetoneVolume; // changeVolume() expects an increment/decrement value
       changeVolume(i);
     }
-    else if (token == "pressure_threshold_dot")
+    else if (token == "pstdot")
     {
-      int i = value.toInt() - MorsePreferences::pressure_threshold_dot; // pressure_threshold_dot() expects an increment/decrement value
-      change_pressure_threshold_dot(i);
+      int i = value.toInt() - MorsePreferences::PStDot; // PStDot() expects an increment/decrement value
+      change_PStDot(i);
     }
-    else if (token == "pressure_threshold_dash")
+    else if (token == "pstdash")
     {
-      int i = value.toInt() - MorsePreferences::pressure_threshold_dash; // pressure_threshold_dash() expects an increment/decrement value
-      change_pressure_threshold_dash(i);
+      int i = value.toInt() - MorsePreferences::PStDash; // PStDash() expects an increment/decrement value
+      change_PStDash(i);
     }
     else /// invalid argument for type == control
       jsonError("INVALID NAME " + token);
@@ -3859,7 +3861,7 @@ void jsonControl(String item, uint8_t value, uint8_t mini, uint8_t maxi, boolean
 
 void jsonControls()
 {
-  DynamicJsonDocument liste(128);
+  DynamicJsonDocument liste(256);
 
   JsonObject speedo = liste.createNestedObject();
   speedo["name"] = "speed";
@@ -3869,13 +3871,13 @@ void jsonControls()
   volumeo["name"] = "volume";
   volumeo["value"] = MorsePreferences::sidetoneVolume;
 
-  JsonObject pressure_threshold_doto = liste.createNestedObject();
-  pressure_threshold_doto["name"] = "pressure_threshold_dot";
-  pressure_threshold_doto["value"] = MorsePreferences::pressure_threshold_dot;
+  JsonObject PStDoto = liste.createNestedObject();
+  PStDoto["name"] = "PStDot";
+  PStDoto["value"] = MorsePreferences::PStDot;
 
-  JsonObject pressure_threshold_dasho = liste.createNestedObject();
-  pressure_threshold_dasho["name"] = "pressure_threshold_dash";
-  pressure_threshold_dasho["value"] = MorsePreferences::pressure_threshold_dash;
+  JsonObject PStDasho = liste.createNestedObject();
+  PStDasho["name"] = "PStDash";
+  PStDasho["value"] = MorsePreferences::PStDash;
   
   DynamicJsonDocument doc(256);
   doc["controls"] = liste;

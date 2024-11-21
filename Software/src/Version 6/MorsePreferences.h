@@ -92,13 +92,13 @@ namespace MorsePreferences
   extern uint8_t tLeft;
   extern uint8_t tRight;
 
-  extern uint8_t pressure_threshold_dot;
-  extern const uint8_t pressure_threshold_dotMin;
-  extern const uint8_t pressure_threshold_dotMax;
+  extern uint8_t PStDot;
+  extern const uint8_t PStDotMin;
+  extern const uint8_t PStDotMax;
 
-  extern uint8_t pressure_threshold_dash;
-  extern const uint8_t pressure_threshold_dashMin;
-  extern const uint8_t pressure_threshold_dashMax;
+  extern uint8_t PStDash;
+  extern const uint8_t PStDashMin;
+  extern const uint8_t PStDashMax;
 
   extern uint8_t vAdjust;
   extern uint8_t loraBand;
@@ -117,7 +117,7 @@ namespace MorsePreferences
 
   //// for adjusting preferences
 
-#define MAX_MAP_ELEMENTS 15
+#define MAX_MAP_ELEMENTS 32
 
   struct parameter
   {
